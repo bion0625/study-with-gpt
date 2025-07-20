@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        /* 선택 시 시각적 강조 */
+        .filter.active { font-weight: bold; }
+        li.done        { text-decoration: line-through; color: gray; }
+    </style>
+</head>
+<body>
+<h2>할 일 목록</h2>
+
+<!-- ① 입력 폼 -->
+<input id="input-title" placeholder="할 일을 입력하세요" />
+<button id="btn-add">추가</button>
+
+<!-- (a) 필터 UI -->
+<button data-view="all" class="filter active">전체</button>
+<button data-view="active" class="filter">미완료</button>
+<button data-view="completed" class="filter">완료</button>
+
+<!-- ② 목록 -->
+<ul id="todo-list"></ul>
+
+<p id="summary"></p>
+
+<script>
+    /***** 전역 상태 *****/
+    let nextId = 1;
+    let tasks = load();
+    let viewMode = 'all';
+
+    /***** 필터별 계산 *****/
+    function getFiltered() {
+        switch (viewMode) {
+            case 'active':      return tasks.filter(t => !t.done);
+            case 'completed':   return tasks.filter(t => t.done);
+            default:            return tasks;
+        }
+    }
+
+    /***** 렌더 함수 *****/
+    function render() {
+        const list = document.querySelector('#todo-list');
+        list.innerHTML = '';
+
+        /* (1) 개별 <li> 생성 */
+        getFiltered().forEach(t => {
+            const li = document.createElement('li');
+            li.textContent = t.title;
+            li.dataset.id = t.id;
+            if (t.done) li.classList.add('done');
+
+            /* ✅ 삭제 버튼 */
+            const del = document.createElement('button');
+            del.textContent = '🗑️';
+            del.className = 'btn-del';
+            li.append(del);
+
+            list.append(li);
+        });
+
+        /* (2) 요약 */
+        const remain = tasks.filter(t => !t.done).length;
+        document.querySelector('#summary').textContent = remain === 0 ? '🎉 모두 완료!' : `🗒️ 남은 일: ${remain}개`;
+
+        /* (3) 필터 상태 표시 */
+        document.querySelectorAll('.filter').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewMode));
+    }
+
+    /***** 입력 추가 *****/
+    document.querySelector('#btn-add').addEventListener('click', () => {
+        const input = document.querySelector('#input-title');
+        const title = input.value.trim();
+        if (!title) return alert('내용을 입력하세요!');
+
+        tasks.push({id: nextId++, title, done: false});
+        input.value = '';
+        save();
+        render();
+    });
+
+    /***** (A) 이벤트 위임: 토글 & 삭제 *****/
+    document
+        .querySelector('#todo-list')
+        .addEventListener('click', e => {
+            const li = e.target.closest('li');
+            if (!li) return;
+
+            const id = Number(li.dataset.id);
+            const t = tasks.find(x => x.id === id);
+
+            if (e.target.classList.contains('btn-del')) {
+                // 🗑️ 삭제
+                tasks = tasks.filter(x => x.id !== id);
+            } else {
+                // ✅ 완료 토글
+                t.done = !t.done;
+            }
+            save();
+            render();
+        });
+
+    /***** (B) 필터 버튼 클릭 *****/
+    document
+        .querySelectorAll('.filter')
+        .forEach(btn => btn.addEventListener('click', () => {
+            viewMode = btn.dataset.view;
+            render();
+        }));
+
+    /***** (C) localStorage 저장/로드 *****/
+    function save() {localStorage.setItem('tasks', JSON.stringify(tasks))}
+    function load() {
+        try {
+            return JSON.parse(localStorage.getItem('tasks')) ?? [];
+        } catch {return [];}
+    }
+
+    /***** 최초 렌더 *****/
+    render();
+</script>
+</body>
+</html>

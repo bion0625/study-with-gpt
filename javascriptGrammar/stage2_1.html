@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <style>
+        .done { text-decoration: line-through; color: gray; }
+    </style>
+</head>
+<body>
+<h2>할 일 목록</h2>
+
+<!-- ① 입력 폼 -->
+<input id="input-title" placeholder="할 일을 입력하세요" />
+<button id="btn-add">추가</button>
+
+<!-- ② 목록 -->
+<ul id="todo-list"></ul>
+
+<script>
+    let nextId = 1;
+    const tasks = [];
+
+    /* ⓐ DOM 선택 */
+    const input = document.querySelector('#input-title');
+    const btn   = document.querySelector('#btn-add');
+    const list  = document.querySelector('#todo-list');
+
+    /* ⓑ 렌더 함수 */
+    function render() {
+        list.innerHTML = '';                       // 전체 초기화
+        tasks.forEach(t => {
+            const li = document.createElement('li');
+            li.textContent = t.title;
+            if (t.done) li.classList.add('done');
+
+            // (선택) data-id 보관
+            li.dataset.id = t.id;
+
+            // ✅ 클릭 시 완료 토글
+            li.addEventListener('click', () => {
+                t.done = !t.done;          // 상태 변경
+                render();                  // 다시 그리기
+            });
+
+            list.append(li);
+        });
+    }
+
+    /* ⓒ 추가 버튼 클릭 */
+    btn.addEventListener('click', () => {
+        const title = input.value.trim();
+        if (!title) return alert('내용을 입력하세요!'); // 조건문 활용
+
+        tasks.push({ id: nextId++, title, done: false });
+        input.value = '';                     // 인풋 비우기
+        render();                             // UI 갱신
+    });
+
+    /* 초기 렌더 호출 */
+    render();
+</script>
+</body>
+</html>
