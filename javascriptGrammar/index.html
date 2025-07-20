@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script>
+    // stage 1 미니 과제 1
+    // const title = prompt("할 일을 입력하세요:");
+    // const message = `할 일 #1: ${title}`;
+    // alert(message);
+    // console.log(typeof title, title);
+
+    // stage 1 미니 과제 2
+    // const id = 1;
+    // const title = prompt("할 일을 입력하세요:");
+    // const done = false;
+    // const task = {id, title, done};
+    // console.log(task, typeof task);
+
+    // stage 1 미니 과제 3
+    // let task = {id: 1, title: 'JS 배우기', done: false};
+    // task.done = !task.done;
+    // const msg = task.done ? `✅ 완료: ${task.title}` : `🕒 진행중: ${task.title}`;
+    //
+    // alert(msg);
+    // console.log(msg);
+
+    // stage 1 미니 과제 4
+    // const task = [
+    //     {id: 1, title: 'JS 배우기', done: true},
+    //     {id: 2, title: 'JSON-Server 설정', done: false},
+    // ];
+    //
+    // task.forEach(t => {
+    //     const line = `${t.done ? '✅' : '🕒'} ${t.title}`;
+    //     console.log(line);
+    // });
+
+    // stage 1 미니 과제 5
+    // const task = [
+    //     {id: 1, title: 'JS 배우기', done: true},
+    //     {id: 2, title: 'JSON-Server 설정', done: false},
+    // ];
+    //
+    // const lis = task.map(t =>
+    //     `<li>${t.done ? '✅' : '🕒'} ${t.title}</li>`
+    // ).join('\n');
+    //
+    // const html = `
+    //     <h2>할 일 목록</h2>
+    //     <ul>
+    //         ${lis}
+    //     </ul>
+    // `;
+    //
+    // document.body.innerHTML = html;
+
+    // stage 1 미니 과제 6
+    let nextId = 1;
+    const tasks = [];
+
+    const title = prompt('새 할 일을 입력하세요');
+    const task = {id: nextId, title, done: false};
+    tasks.push(task);
+
+    if (confirm(`"${title}"을 완료로 표시할까요?`)) {
+        task.done = !task.done;
+    }
+
+    const listHtml = tasks.map(t =>
+        `<li>${t.done ? '✅' : '🕒'} ${t.title}</li>`
+    ).join('\n');
+
+    const remaining = tasks.filter(t => !t.done).length;
+    const summary = remaining === 0 ? '🎉 모두 완료!' : `🗒️ 남은 일: ${remaining}개`;
+
+    document.body.innerHTML = `
+        <h2>할 일 목록</h2>
+        <ul>${listHtml}</ul>
+        <p>${summary}</p>
+    `;
+
+    console.log(tasks);
+</script>
+
+</body>
+</html>
