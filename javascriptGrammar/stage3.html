@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>Todo v0.4 - Stage 3</title>
+    <style>
+        body { font-family: system-ui, sans-serif; }
+        .done { text-decoration: line-through; color: gray; }
+        .filter.active { font-weight: bold; }
+    </style>
+</head>
+<body>
+<h2>할 일 목록</h2>
+
+<!-- ① 입력 폼 -->
+<input id="input-title" placeholder="할 일을 입력하세요" />
+<button id="btn-add">추가</button>
+
+<!-- (a) 필터 UI -->
+<button data-view="all" class="filter active">전체</button>
+<button data-view="active" class="filter">미완료</button>
+<button data-view="completed" class="filter">완료</button>
+
+<!-- ② 목록 -->
+<ul id="todo-list"></ul>
+
+<p id="summary"></p>
+
+<script>
+    /***** 전역 상태 *****/
+    let nextId = 1;
+    let tasks = load();
+    let viewMode = 'all';
+
+    const save = () => localStorage.setItem('tasks', JSON.stringify(tasks));
+    function load() {
+        try {
+            return JSON.parse(localStorage.getItem('tasks')) ?? [];
+        } catch {return [];}
+    }
+
+    const makeTask = (title) => ({id: nextId++, title, done: false});
+
+    const getFiltered = () => ({
+        all: tasks,
+        active: tasks.filter(t => !t.done),
+        completed: tasks.filter(t => t.done),
+    }[viewMode]);
+
+    const addTask = (title) => { tasks = [...tasks, makeTask(title)]}
+    const toggleTask = (id) => {
+        tasks = tasks.map(t => t.id === id ? {...t, done: !t.done} : t);
+    };
+    const removeTask = (id) => {
+        tasks = tasks.filter(t => t.id !== id);
+    };
+
+    function render() {
+        const ul = document.querySelector('#todo-list');
+        ul.innerHTML = '';
+
+        for (const {id, title, done} of getFiltered()) {
+            const li = document.createElement('li');
+            li.dataset.id = id;
+            li.textContent = title ?? '(제목 없음)';
+            if (done) li.classList.add('done');
+
+            const delBtn = document.createElement('button');
+            delBtn.textContent = '🗑️';
+            delBtn.className = 'btn-del';
+            li.append(delBtn);
+            ul.append(li);
+        }
+
+        const { todo } = tasks.reduce(
+            (acc, { done }) => done ? {...acc, done: acc.done + 1} : {...acc, todo: acc.todo + 1},
+            {done: 0, todo: 0}
+        );
+        document.querySelector('#summary').textContent = todo ? `🗒️ 남은 일: ${todo}개` : '🎉 모두 완료!';
+
+        /* (3) 필터 상태 표시 */
+        document.querySelectorAll('.filter').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewMode));
+    }
+
+    /***** 입력 추가 *****/
+    document.querySelector('#btn-add').addEventListener('click', () => {
+        const input = document.querySelector('#input-title');
+        const title = input.value.trim();
+        if (!title) return alert('내용을 입력하세요!');
+        if (tasks.some(t => t.title === title))
+            return alert('이미 같은 제목이 있어요!');
+        addTask(title); save(); render();
+        input.value = '';
+    });
+
+    /***** (A) 이벤트 위임: 토글 & 삭제 *****/
+    document.querySelector('#todo-list')
+        .addEventListener('click', e => {
+            const li = e.target.closest('li');
+            if (!li) return;
+            const id = Number(li.dataset.id);
+
+            e.target.classList.contains('btn-del') ? removeTask(id) : toggleTask(id);
+
+            save(); render();
+        });
+
+    /***** (B) 필터 버튼 클릭 *****/
+    document
+        .querySelectorAll('.filter')
+        .forEach(btn => btn.addEventListener('click', () => {
+            viewMode = btn.dataset.view;
+            render();
+        }));
+
+
+    /***** 최초 렌더 *****/
+    render();
+</script>
+</body>
+</html>
