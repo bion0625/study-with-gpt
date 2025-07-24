@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8" />
+    <title>Todo v0.4 - Stage 3</title>
+    <style>
+        body { font-family: system-ui, sans-serif; }
+        .done { text-decoration: line-through; color: gray; }
+        .filter.active { font-weight: bold; }
+    </style>
+</head>
+<body>
+<h2>할 일 목록</h2>
+
+<!-- ① 입력 폼 -->
+<input id="input-title" placeholder="할 일을 입력하세요" />
+<button id="btn-add">추가</button>
+
+<!-- (a) 필터 UI -->
+<button data-view="all" class="filter active">전체</button>
+<button data-view="active" class="filter">미완료</button>
+<button data-view="completed" class="filter">완료</button>
+
+<!-- ② 목록 -->
+<ul id="todo-list"></ul>
+
+<p id="summary"></p>
+
+<script type="module" src="./main.js"></script>
+</body>
+</html>
