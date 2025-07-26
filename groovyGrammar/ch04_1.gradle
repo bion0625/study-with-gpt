@@ -1,0 +1,19 @@
+plugins {
+    id 'application'
+}
+// 어떤 플러그인 사용할 건지
+
+repositories {
+    mavenCentral()
+}
+// 라이브러리를 어디서 다운로드할 건지
+
+dependencies {
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
+}
+// 프로젝트에 필요한 외부 라이브러리 선언
+
+application {
+    mainClass = 'com.example.Main'
+}
+// 실행 진입점 클래스 설정

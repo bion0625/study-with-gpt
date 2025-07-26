@@ -1,0 +1,47 @@
+pipeline {
+    agent {
+        docker { image 'openjdk:17' }
+    }
+
+    environment {
+        PROJECT_NAME = 'BionApp'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out source code...'
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Building $PROJECT_NAME..."
+                sh './gradlew build'
+            }
+        }
+
+        stage('Test') {
+            when {
+                branch 'main'
+            }
+            steps {
+                echo 'Running tests...'
+                sh './gradlew test'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Cleaning up'
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed'
+        }
+    }
+}
