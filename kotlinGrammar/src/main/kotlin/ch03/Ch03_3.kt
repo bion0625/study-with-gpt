@@ -1,3 +1,5 @@
+package ch03
+
 import kotlin.properties.Delegates
 
 
@@ -11,7 +13,7 @@ class PrinterImpl: Printer {
     override fun print() = println("프린터가 출력합니다")
 }
 
-class MyPrinter(printer: Printer) : Printer  by printer
+class MyPrinter(printer: Printer) : Printer by printer
 
 
 // property by

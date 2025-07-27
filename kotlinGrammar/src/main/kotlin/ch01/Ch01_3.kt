@@ -1,4 +1,4 @@
-
+package ch01
 
 // if
 fun max(a: Int, b: Int): Int {

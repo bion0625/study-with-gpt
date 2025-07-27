@@ -1,4 +1,4 @@
-
+package ch02
 
 // expand function
 fun String.addMark(): String = this + "!"

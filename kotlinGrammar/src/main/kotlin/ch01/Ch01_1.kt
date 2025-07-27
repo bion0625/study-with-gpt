@@ -1,4 +1,4 @@
-// sample & homework
+package ch01// sample & homework
 
 fun main() {
     val name = "Kotlin"

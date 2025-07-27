@@ -1,4 +1,4 @@
-
+package ch02
 
 
 // (singleton) object
